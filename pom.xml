@@ -52,6 +52,11 @@
 			<artifactId>springfox-swagger2</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-spatial</artifactId>
+			<version>8.4.1</version>
+		</dependency>
 
 		<!-- runtime dependencies -->
 		<dependency>
@@ -77,12 +82,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
@@ -91,7 +90,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -156,18 +155,9 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>5.2.4</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- <plugin> <groupId>org.owasp</groupId> <artifactId>dependency-check-maven</artifactId> 
+				<version>5.2.4</version> <executions> <execution> <goals> <goal>check</goal> 
+				</goals> </execution> </executions> </plugin> -->
 		</plugins>
 	</build>
 

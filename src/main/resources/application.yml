@@ -1,0 +1,53 @@
+spring:
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+    property-naming-strategy: SNAKE_CASE
+
+remote:
+  users:
+    name: users-api
+    url:
+      users-in-london: /city/London/users
+      all-users: /users
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+users-api:
+  ribbon:
+    MaxAutoRetries: 2
+    MaxAutoRetriesNextServer: 0
+    OkToRetryOnAllOperations: true
+    listOfServers: https://bpdts-test-app.herokuapp.com/
+
+logging:
+  file:
+    max-history: 5
+  level:
+    ROOT: ERROR
+    uk:
+      gov: INFO
+
+info:
+  app:
+    name: @project.name@
+    description: @project.description@
+    version: @project.version@
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true

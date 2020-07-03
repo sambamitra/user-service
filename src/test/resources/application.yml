@@ -1,0 +1,13 @@
+remote:
+  users:
+    name: users-api
+    url:
+      users-in-london: /city/London/users
+      all-users: /users
+      
+users-api:
+  ribbon:
+    listOfServers: localhost:18090
+    MaxAutoRetries: 3
+    MaxAutoRetriesNextServer: 0
+    OkToRetryOnAllOperations: true
