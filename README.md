@@ -47,3 +47,5 @@ Once the application is running :-
 ## Technical debt
 
 - Integration tests
+- Circuit breaker
+- Error handling
