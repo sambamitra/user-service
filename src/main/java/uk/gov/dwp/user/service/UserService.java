@@ -55,9 +55,13 @@ public class UserService {
 
     final List<UserDTO> usersInAndNearLondon = Stream
         .concat(usersInLondon.stream(), usersNearLondon.stream()).collect(Collectors.toList());
+    log.info("Number of users in and near London : {}", usersInAndNearLondon.size());
 
-    return usersInAndNearLondon.stream().collect(
+    final Set<UserDTO> distinctUsersInAndNearLondon = usersInAndNearLondon.stream().collect(
         Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(UserDTO::getId))));
+    log.info("Number of distinct users in and near London : {}",
+        distinctUsersInAndNearLondon.size());
+    return distinctUsersInAndNearLondon;
   }
 
 }
