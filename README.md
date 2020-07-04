@@ -29,7 +29,7 @@ This will run unit tests and build the application.
 ```
 docker build -t dwp/userservice:latest .
 
-docer run --name userservice -p 8080:8080 dwp/userservice:latest -d
+docker run --name userservice -p 8080:8080 -d dwp/userservice:latest
 ```
 
 ### Run locally
