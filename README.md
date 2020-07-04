@@ -44,6 +44,10 @@ Once the application is running :-
 
 - Go to `http://localhost:8080/swagger-ui.html` to see the API contract. The API operation(s) can be performed using this
 
+## Distance calculation
+
+The distance between 2 coordinates have been obtained using the [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
+
 ## Technical debt
 
 - Integration tests
