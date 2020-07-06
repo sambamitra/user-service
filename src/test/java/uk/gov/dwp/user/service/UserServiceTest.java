@@ -2,6 +2,7 @@ package uk.gov.dwp.user.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
@@ -44,6 +45,19 @@ public class UserServiceTest {
     final Iterator<UserDTO> iterator = usersInAndNearLondon.iterator();
     assertEquals("Samba", iterator.next().getFirstName());
     assertEquals("Abc", iterator.next().getFirstName());
+  }
+
+  @Test
+  public void shouldNotFetchAnyUserIfNoOneLivesInOrNearLondon() {
+    // given - no users living in or near London
+    given(this.client.getUsersInLondon()).willReturn(new ArrayList<>());
+    given(this.client.getAllUsers()).willReturn(new ArrayList<>());
+
+    // when
+    final Set<UserDTO> usersInAndNearLondon = this.service.fetchUsersLivingInAndNearLondon();
+
+    // then
+    assertEquals(0, usersInAndNearLondon.size());
   }
 
 }
