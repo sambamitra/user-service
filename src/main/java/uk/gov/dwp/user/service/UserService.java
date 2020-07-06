@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.apache.lucene.util.SloppyMath;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,8 @@ public class UserService {
     final List<UserDTO> usersInLondon = this.usersApiClient.getUsersInLondon();
     final List<UserDTO> allUsers = this.usersApiClient.getAllUsers();
     log.info("Number of users in London : {}", usersInLondon.size());
-    final Set<UserDTO> distinctUsersInAndNearLondon =
-        new TreeSet<>(Comparator.comparing(UserDTO::getId));
+    final Set<UserDTO> distinctUsersInAndNearLondon = usersInLondon.stream().collect(
+        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(UserDTO::getId))));
 
     for (UserDTO userInLondon : usersInLondon) {
       for (UserDTO user : allUsers) {
@@ -47,7 +48,6 @@ public class UserService {
           }
         }
       }
-      distinctUsersInAndNearLondon.add(userInLondon);
     }
 
     log.info("Number of distinct users in and near London : {}",
