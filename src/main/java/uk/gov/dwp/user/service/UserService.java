@@ -1,12 +1,9 @@
 package uk.gov.dwp.user.service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.lucene.util.SloppyMath;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +32,9 @@ public class UserService {
   public Set<UserDTO> fetchUsersLivingInAndNearLondon() {
     final List<UserDTO> usersInLondon = this.usersApiClient.getUsersInLondon();
     final List<UserDTO> allUsers = this.usersApiClient.getAllUsers();
-    final List<UserDTO> usersNearLondon = new ArrayList<>();
     log.info("Number of users in London : {}", usersInLondon.size());
+    final Set<UserDTO> distinctUsersInAndNearLondon =
+        new TreeSet<>(Comparator.comparing(UserDTO::getId));
 
     for (UserDTO userInLondon : usersInLondon) {
       for (UserDTO user : allUsers) {
@@ -45,20 +43,13 @@ public class UserService {
               userInLondon.getLongitude(), user.getLatitude(), user.getLongitude());
           double distanceInMiles = distanceInMeters * 0.000621371;
           if (distanceInMiles <= 50) {
-            usersNearLondon.add(user);
+            distinctUsersInAndNearLondon.add(user);
           }
         }
       }
+      distinctUsersInAndNearLondon.add(userInLondon);
     }
 
-    log.info("Number of users near London : {}", usersNearLondon.size());
-
-    final List<UserDTO> usersInAndNearLondon = Stream
-        .concat(usersInLondon.stream(), usersNearLondon.stream()).collect(Collectors.toList());
-    log.info("Number of users in and near London : {}", usersInAndNearLondon.size());
-
-    final Set<UserDTO> distinctUsersInAndNearLondon = usersInAndNearLondon.stream().collect(
-        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(UserDTO::getId))));
     log.info("Number of distinct users in and near London : {}",
         distinctUsersInAndNearLondon.size());
     return distinctUsersInAndNearLondon;
