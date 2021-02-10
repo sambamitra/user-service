@@ -17,13 +17,15 @@ feign:
       default:
         connectTimeout: 5000
         readTimeout: 5000
+  httpclient:
+    disable-ssl-validation: true
 
 users-api:
   ribbon:
     MaxAutoRetries: 2
     MaxAutoRetriesNextServer: 0
     OkToRetryOnAllOperations: true
-    listOfServers: https://bpdts-test-app.herokuapp.com/
+    listOfServers: https://dwp-techtest.herokuapp.com/
 
 logging:
   file:
