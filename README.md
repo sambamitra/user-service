@@ -48,8 +48,3 @@ Once the application is running :-
 
 The distance between 2 coordinates have been obtained using the [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
 
-## Technical debt
-
-- Integration tests
-- Circuit breaker
-- Error handling

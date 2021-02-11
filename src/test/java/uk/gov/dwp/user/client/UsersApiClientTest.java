@@ -1,142 +1,78 @@
 package uk.gov.dwp.user.client;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.cloud.netflix.ribbon.StaticServerList;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
-import feign.RetryableException;
-import uk.gov.dwp.user.client.UsersApiClientTest.LocalRibbonClientConfiguration;
+import org.springframework.test.web.client.MockRestServiceServer;
 import uk.gov.dwp.user.model.UserDTO;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@ContextConfiguration(classes = {LocalRibbonClientConfiguration.class})
-@EnableAutoConfiguration
+@RestClientTest(UsersApiClient.class)
+@AutoConfigureWebClient(registerRestTemplate = true)
 public class UsersApiClientTest {
-
-    @Rule
-    public WireMockRule wiremock = new WireMockRule(wireMockConfig().port(18090));
-
-    @BeforeClass
-    public static void setProperties() {
-        System.setProperty("users-api.ribbon.listOfServers", "127.0.0.1:18090");
-    }
-
-    @Before
-    public void initTest() {
-        LocalRibbonClientConfiguration.server.setPort(this.wiremock.port());
-    }
-
-    @TestConfiguration
-    public static class LocalRibbonClientConfiguration {
-
-        private static final Server server = new Server("127.0.0.1", 0);
-
-        @Bean
-        public ServerList<Server> ribbonServerList() {
-            return new StaticServerList<>(server);
-        }
-    }
-
-    private final int RETRY_COUNT = 3;
 
     @Autowired
     private UsersApiClient client;
 
-    @Test
-    public void testGetUsersInLondon_whenCalled_endpointHit() {
-        // given
-        wiremock.stubFor(get(urlEqualTo("/city/London/users")).willReturn(aResponse().withStatus(200)));
+    @Autowired
+    private MockRestServiceServer server;
 
-        // when
-        client.getUsersInLondon();
-
-        // then
-        verify(1, getRequestedFor(urlEqualTo("/city/London/users")));
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    public void testGetUsersInLondon_whenCalled_ThenReturnWithUsers() {
+    public void testGetUsersInLondon_whenCalled_ThenReturnWithUsers() throws JsonProcessingException {
         // given
-        final UserDTO user = UserDTO.builder().id(1L).firstName("Samba").lastName("Mitra")
+        final UserDTO user1 = UserDTO.builder().id(1L).firstName("Samba").lastName("Mitra")
                 .email("abc@def.com").ipAddress("1.2.3.4").latitude(10.45).longitude(45.34).build();
-
-        wiremock.stubFor(get(urlEqualTo("/city/London/users")).willReturn(okJson(
-                "[{\"id\":1,\"firstName\":\"Samba\",\"lastName\":\"Mitra\",\"email\":\"abc@def.com\",\"ipAddress\":\"1.2.3.4\",\"latitude\":10.45,\"longitude\":45.34}]")));
+        final String userInLondonString = objectMapper.writeValueAsString(Arrays.asList(user1));
+        this.server.expect(requestTo("http://localhost:18090/city/London/users"))
+                .andRespond(withSuccess(userInLondonString, MediaType.APPLICATION_JSON));
 
         // when
-        final List<UserDTO> usersInLondon = client.getUsersInLondon();
+        final List<UserDTO> usersInLondon = this.client.getUsersInLondon();
 
         // then
         assertEquals(1, usersInLondon.size());
-        assertEquals(user.getId(), usersInLondon.get(0).getId());
+        assertEquals(1L, usersInLondon.get(0).getId());
+        assertEquals("Samba", usersInLondon.get(0).getFirstName());
     }
 
     @Test
-    public void testGetAllUsers_whenCalled_endpointHit() {
+    public void testGetAllUsers_whenCalled_ThenReturnWithUsers() throws JsonProcessingException {
         // given
-        wiremock.stubFor(get(urlEqualTo("/users")).willReturn(aResponse().withStatus(200)));
-
-        // when
-        client.getAllUsers();
-
-        // then
-        verify(1, getRequestedFor(urlEqualTo("/users")));
-    }
-
-    @Test
-    public void testGetAllUsers_whenCalled_ThenReturnWithUsers() {
-        // given
-        final UserDTO user = UserDTO.builder().id(1L).firstName("Samba").lastName("Mitra")
+        final UserDTO user1 = UserDTO.builder().id(1L).firstName("Samba").lastName("Mitra")
                 .email("abc@def.com").ipAddress("1.2.3.4").latitude(10.45).longitude(45.34).build();
-
-        wiremock.stubFor(get(urlEqualTo("/users")).willReturn(okJson(
-                "[{\"id\":1,\"firstName\":\"Samba\",\"lastName\":\"Mitra\",\"email\":\"abc@def.com\",\"ipAddress\":\"1.2.3.4\",\"latitude\":10.45,\"longitude\":45.34}]")));
-
-        // when
-        final List<UserDTO> usersInLondon = client.getAllUsers();
-
-        // then
-        assertEquals(1, usersInLondon.size());
-        assertEquals(user.getId(), usersInLondon.get(0).getId());
-    }
-
-    @Test
-    public void test_whenTimeout_thenRetryCorrectAmount() {
-        // given
-        wiremock.stubFor(
-                get(urlEqualTo("/users")).willReturn(aResponse().withStatus(400).withFixedDelay(2000)));
+        final UserDTO user2 = UserDTO.builder().id(2L).firstName("Abc").lastName("Def")
+                .email("abc@def.com").ipAddress("2.3.4.5").latitude(10.40).longitude(45.39).build();
+        final String allUsersString = objectMapper.writeValueAsString(Arrays.asList(user1, user2));
+        this.server.expect(requestTo("http://localhost:18090/users"))
+                .andRespond(withSuccess(allUsersString, MediaType.APPLICATION_JSON));
 
         // when
-        try {
-            client.getAllUsers();
-        } catch (final RetryableException e) {
-        }
+        final List<UserDTO> allUsers = this.client.getAllUsers();
 
         // then
-        verify(RETRY_COUNT, getRequestedFor(urlEqualTo("/users")));
+        assertEquals(2, allUsers.size());
+        assertEquals(1L, allUsers.get(0).getId());
+        assertEquals("Samba", allUsers.get(0).getFirstName());
+        assertEquals(2L, allUsers.get(1).getId());
+        assertEquals("Abc", allUsers.get(1).getFirstName());
     }
+
+
 }

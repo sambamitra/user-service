@@ -1,17 +1,40 @@
 package uk.gov.dwp.user.client;
 
-import java.util.List;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.dwp.user.model.UserDTO;
 
-@FeignClient(name = "${remote.users.name}")
-public interface UsersApiClient {
+import java.util.List;
 
-  @GetMapping("${remote.users.url.users-in-london}")
-  List<UserDTO> getUsersInLondon();
+@Service
+@RequiredArgsConstructor
+public class UsersApiClient {
 
-  @GetMapping("${remote.users.url.all-users}")
-  List<UserDTO> getAllUsers();
+    private final RestTemplate restTemplate;
+
+    @Value("${remote.users.users-in-london}")
+    private String usersInLondonUri;
+
+    @Value("${remote.users.all-users}")
+    private String allUsersUri;
+
+    public List<UserDTO> getUsersInLondon() {
+        ResponseEntity<List<UserDTO>> response = restTemplate
+                .exchange(usersInLondonUri, HttpMethod.GET, null, new ParameterizedTypeReference<List<UserDTO>>() {
+                });
+        return response.getBody();
+    }
+
+    public List<UserDTO> getAllUsers() {
+        ResponseEntity<List<UserDTO>> response = restTemplate
+                .exchange(allUsersUri, HttpMethod.GET, null, new ParameterizedTypeReference<List<UserDTO>>() {
+                });
+        return response.getBody();
+    }
 
 }
