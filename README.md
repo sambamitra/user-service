@@ -1,4 +1,15 @@
-# User Service [![CircleCI](https://circleci.com/gh/sambamitra/user-service.svg?style=svg)](https://app.circleci.com/pipelines/github/sambamitra/user-service)
+# User Service 
+
+[![CircleCI](https://circleci.com/gh/sambamitra/user-service.svg?style=svg)](https://app.circleci.com/pipelines/github/sambamitra/user-service) 
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=bugs)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=code_smells)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=coverage)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=security_rating)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=sqale_index)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=sambamitra_user-service&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=sambamitra_user-service)
 
 This is a super simple service which exposes an API to fetch users living in and within 50 miles of London.
 
