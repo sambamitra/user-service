@@ -1,8 +1,3 @@
-rest:
-  ssl:
-    trustStore: classpath:truststore.p12
-    trustStorePassword: s3cr3t
-
 remote:
   users:
     base-url: http://localhost:18090

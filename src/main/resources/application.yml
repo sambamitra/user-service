@@ -1,15 +1,8 @@
 spring:
-  profiles:
-    active: prod
   jackson:
     deserialization:
       fail-on-unknown-properties: true
     property-naming-strategy: SNAKE_CASE
-
-rest:
-  ssl:
-    trustStore: classpath:truststore.p12
-    trustStorePassword: s3cr3t
 
 remote:
   users:

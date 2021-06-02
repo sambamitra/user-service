@@ -1,62 +1,31 @@
 package uk.gov.dwp.user.config;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-
-import javax.net.ssl.SSLContext;
-import java.net.URL;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
 public class ApplicationConfig {
 
-    @Value("${rest.ssl.trustStore}")
-    private String trustStore;
+  public ClientHttpRequestFactory getRequestFactory() {
+    final CloseableHttpClient httpClient =
+        HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier()).build();
+    final HttpComponentsClientHttpRequestFactory requestFactory =
+        new HttpComponentsClientHttpRequestFactory();
+    requestFactory.setHttpClient(httpClient);
+    return requestFactory;
+  }
 
-    @Value("${rest.ssl.trustStorePassword}")
-    private String trustStorePassword;
-
-    private String protocol = "TLSv1.2";
-
-    public ClientHttpRequestFactory getRequestFactory() {
-        final SSLContext sslContext;
-        try {
-            sslContext = SSLContextBuilder.create()
-                    .loadTrustMaterial(new URL(trustStore),
-                            trustStorePassword.toCharArray())
-                    .setProtocol(protocol)
-                    .build();
-        } catch (Exception e) {
-            throw new IllegalStateException(
-                    "Failed to setup client SSL context", e
-            );
-        }
-
-        final HttpClient httpClient = HttpClientBuilder.create()
-                .setSSLContext(sslContext)
-                .build();
-
-        final ClientHttpRequestFactory requestFactory =
-                new HttpComponentsClientHttpRequestFactory(httpClient);
-
-        log.info("Registered SSL truststore {} for client requests",
-                trustStore);
-        return requestFactory;
-    }
-
-    @Bean
-    @Profile("prod")
-    public RestTemplate restTemplate() {
-        return new RestTemplate(getRequestFactory());
-    }
+  @Bean
+  public RestTemplate restTemplate() {
+    return new RestTemplate(getRequestFactory());
+  }
 
 }
