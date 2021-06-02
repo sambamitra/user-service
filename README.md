@@ -1,4 +1,4 @@
-# User Service
+# User Service [![CircleCI](https://circleci.com/gh/sambamitra/user-service.svg?style=svg)](https://app.circleci.com/pipelines/github/sambamitra/user-service)
 
 This is a super simple service which exposes an API to fetch users living in and within 50 miles of London.
 
