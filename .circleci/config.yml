@@ -36,6 +36,10 @@ jobs:
           name: Test
           command: mvn test
 
+      - run:
+          name: Analyze on SonarCloud
+          command: mvn verify sonar:sonar
+
   deploy:
     docker:
       - image: buildpack-deps:trusty
@@ -52,7 +56,9 @@ workflows:
   build-deploy:
     jobs:
       - build
+          context: SonarCloud
 
       - deploy:
+          context: Heroku
           requires:
             - build
