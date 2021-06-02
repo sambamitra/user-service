@@ -57,6 +57,6 @@ workflows:
           context: SonarCloud
 
       - deploy:
-          context: Heroku
           requires:
             - build
+          context: Heroku
