@@ -41,6 +41,8 @@ jobs:
           command: mvn verify sonar:sonar
 
   deploy:
+    docker:
+      - image: buildpack-deps:trusty
     steps:
       - checkout
       - run:
