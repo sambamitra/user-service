@@ -26,6 +26,7 @@
 		<sonar.projectKey>sambamitra_user-service</sonar.projectKey>
 		<sonar.organization>sambamitra</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.exclusions>**/*Application.*</sonar.exclusions>
 	</properties>
 
 	<dependencies>

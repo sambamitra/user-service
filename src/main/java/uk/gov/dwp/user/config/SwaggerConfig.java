@@ -3,7 +3,6 @@ package uk.gov.dwp.user.config;
 import static springfox.documentation.schema.AlternateTypeRules.newRule;
 import java.time.LocalDate;
 import java.util.Collections;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
-  @Autowired
-  private TypeResolver typeResolver;
-
   private ApiInfo apiInfo() {
     return new ApiInfo("Users API", "The Users API provides operations relating to users", "1.0.0",
         "http://terms-of-service.url",
@@ -34,16 +30,16 @@ public class SwaggerConfig {
   }
 
   @Bean
-  public Docket api() {
+  public Docket api(final TypeResolver typeResolver) {
     return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select()
         .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
         .paths(PathSelectors.regex("/api/.*")).build().pathMapping("/")
         .directModelSubstitute(LocalDate.class, String.class)
         .genericModelSubstitutes(ResponseEntity.class)
         .alternateTypeRules(newRule(
-            this.typeResolver.resolve(DeferredResult.class,
-                this.typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
-            this.typeResolver.resolve(WildcardType.class)))
+            typeResolver.resolve(DeferredResult.class,
+                typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
+            typeResolver.resolve(WildcardType.class)))
         .useDefaultResponseMessages(false).forCodeGeneration(true);
   }
 
