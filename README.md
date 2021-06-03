@@ -61,9 +61,16 @@ Once the application is running :-
 
 - Go to `http://localhost:8080/swagger-ui.html` to see the API contract. The API operation(s) can be performed using this
 
-## Distance calculation
+## Application logic
 
-The distance between 2 coordinates have been obtained using the [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
+The following logic was used to calculate the users living in and within 50 miles of London - 
+
+- Get all users living in London by calling the api `https://dwp-techtest.herokuapp.com/city/London/users`. This returns a list of 6 users living in London (A)
+- Get all users by calling the api `https://dwp-techtest.herokuapp.com/users`. This returns a list of 1000 users (B)
+- Calculate the distance between each user in list A and each in list B using the [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula). Don't calculate the distance if the user in list A is the same user in list B (for performance reasons)
+- If the distance calculated above is less than or equal to 50 miles, add the user from list B in a separate list C - this is the list of users living within 50 miles of an user in London
+- At the end of processing, add the lists A (users in London) and C (users within 50 miles of London)
+- Convert the combined list to a set to remove duplicate users that might have been added. Sort the set by the user id to display users in order of their id.
 
 ## Production ready features
 
