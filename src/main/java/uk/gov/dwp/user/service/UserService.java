@@ -22,6 +22,9 @@ public class UserService {
 
     private final UsersApiClient usersApiClient;
 
+    private static final double MILES_TO_METERS = 0.000621371;
+    private static final int LONDON_RADIUS = 50;
+
     /**
      * Fetches all the users who live in London and within 50 miles of London.
      *
@@ -40,8 +43,8 @@ public class UserService {
                 if (user.getId().longValue() != userInLondon.getId().longValue()) {
                     double distanceInMeters = SloppyMath.haversinMeters(userInLondon.getLatitude(),
                             userInLondon.getLongitude(), user.getLatitude(), user.getLongitude());
-                    double distanceInMiles = distanceInMeters * 0.000621371;
-                    if (distanceInMiles <= 50) {
+                    double distanceInMiles = distanceInMeters * MILES_TO_METERS;
+                    if (distanceInMiles <= LONDON_RADIUS) {
                         usersNearLondon.add(user);
                     }
                 }

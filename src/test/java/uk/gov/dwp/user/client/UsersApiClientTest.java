@@ -2,25 +2,27 @@ package uk.gov.dwp.user.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClientException;
 import uk.gov.dwp.user.model.UserDTO;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @RestClientTest(UsersApiClient.class)
 @AutoConfigureWebClient(registerRestTemplate = true)
 public class UsersApiClientTest {
@@ -50,6 +52,16 @@ public class UsersApiClientTest {
         assertEquals(1, usersInLondon.size());
         assertEquals(1L, usersInLondon.get(0).getId());
         assertEquals("Samba", usersInLondon.get(0).getFirstName());
+    }
+
+    @Test
+    public void testGetUsersInLondon_whenCalled_ThenThrowException() {
+        // given
+        this.server.expect(requestTo("http://localhost:18090/city/London/users"))
+                .andRespond(withServerError());
+
+        // when/then
+        assertThrows(RestClientException.class, () -> this.client.getUsersInLondon());
     }
 
     @Test
